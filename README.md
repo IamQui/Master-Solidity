@@ -76,24 +76,25 @@ contract Coin {
 
     // Events allow clients to react to specific contract changes you declare
     event Sent(address from, address to, uint amount);
+    // this declares an event - Ethereum clients can listen for these events without much cost. As soon as it is emitted, the listener receives the arguments (from, to, amount) which makes it possible to track transactions
 
-    // Constructor code is only run when the contract is created
+    // Constructor is a special function that is only executed when the contract is created and CANNOT be called afterwards. In this case, it permanently stores the address of the person creating the contract
     constructor() {
-        minter = msg.sender;
+        minter = msg.sender; // msg is a special global variable that contains propertes which allow access to the blockchain. msg.sender is always the address where the current function call came from
     }
 
-    // Sends an amount of newly created coins to an address
-    // Can only be called by the contract creator
+    // Sends an amount of newly created coins to another address
     function mint(address receiver, uint amount) public {
-        require(msg.sender == minter);
+        require(msg.sender == minter); // require function defines conditions that read - in this case - the contract can only be called by the contract creator else contract reverts
         balances[receiver] += amount;
     }
 
-    // Errors allow you to provide information about why an operation failed.
-    // They are returned to the caller of the function.
+    // Errors allow you to provide information to the caller about why a condition or an operation failed. Errors are used together with the revert statement.
+
+    // The revert statement unconditionally aborts andreverts all changes (similiar to the require function) But allow you to provide the name of an error and additional data which will be supplied to the caller (and eventually to the front-end application or block explorer) so that a failure can more easily be debugged or reacted upon.
     error InsufficientBalance(uint requested, uint available);
 
-    // Sends an amount of existing coins from any caller to an address
+    // The send function can be used by anyone (who already has some of these coins) to send coins to anyone else. If the sender does NOT have enough coins to send, the if condition evaluates to true and as a result, the revert will cause the operation to fail while providing the sender with error details using the InsufficientBalance error.
     function send(address receiver, uint amount) public {
         require(amount <= balances[msg.sender], InsufficientBalance(amount, balances[msg.sender]));
         balances[msg.sender] -= amount;
@@ -102,3 +103,56 @@ contract Coin {
     }
 }
 ```
+
+### Blockchain Basics
+
+## Transactions 
+
+* A blockchain is a globally shared, transactional database. 
+
+* This means everyone can read entries in the database just by participating in the network. 
+
+* If you want to change something in the database, you have to create a "transaction" which has to be accepted by all others. If, for whatever reason, the transaction is not possible, then no account is modified. 
+
+* Furthermore, every transaction is always cryptographically signed by the sender (creator). This makes guarding access to specific modifications of the database straightforward.
+
+## Blocks
+
+* As part of the "order selection mechanism", which is called attestation, it may happen that blocks are reverted from time to time, but only at the tip of the chain. 
+
+* The more blocks added on top of a particular block, the less likely this block will be reverted.
+
+* So, your transactions might be reverted and even removed from the blockchain, but the longer you wait, the less likely it will be.
+
+### The Ethereum Virtual Machine (The EVM)
+
+## Overview
+
+* The EVM is the runtime environment for smart contracts in Ethereum. It is not only sandboxed but actually completely isolated, which means that code running inside the EVM has NO access to network, filesystem, or other precesses. Smart contracts even have limited access to other smart contracts.
+
+## Accounts
+
+* There are two kinds of accounts in Ethereum which share the same address space: 
+** External Account or Externally Owned Account (EOA): which are controlled by public-private key pair
+** Contract Accounts: which are controlled by the code stored together with the account
+
+* The address of the EOA is determined from the public key 
+* The contract address is determined by the sender's address and nonce. When a contract is created, its address is computed by taking the Keccak-25 hash of the RLP-encoded list of the creator's address and nonce, and then taking the rightmost 20 bytes of this hash.
+
+* Both contract types are treated equally by the EVM
+
+* Every account has a persistent key-value store called storage.
+
+* Every account has a balance in Ether (in "Wei" to be exact)
+
+## Transactions
+
+* A transaction is a message sent from one account to another (which might be the same account, or an empty account). The message can include binary data (which is called "payload") and/or Ether.
+
+* If the target account contains code, that code is executed and the payload is provided as input data.
+
+* If the target account is not set (meaning the transaction does not have a recipient or the recipient is set to null)  the transaction creates a new contract.
+
+## Gas
+
+* Each transaction is charged with a certain amount of gas that has to be paid for the by the originator of the transaction (tx.origin).
