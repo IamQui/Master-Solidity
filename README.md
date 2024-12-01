@@ -156,3 +156,9 @@ contract Coin {
 ## Gas
 
 * Each transaction is charged with a certain amount of gas that has to be paid for the by the originator of the transaction (tx.origin).
+
+* If gas is used up at any point, an out-of-gas exception is triggered which ends execution and reverts all modifications made to the state in the current call frame.
+
+* Gas incentivizes economical use of the EVM execution time & also compensates EVM executors (i.e.: miners / stakers). Since each block has a maximum amount of gas, it also limits the amount of work needed to validate a block.
+
+* The gas price is a value set by the originator of the transaction, who has to pay (gas_price * gas) up front to the EVM executor. If some gas is left after execution, it is refunded to the transaction originator. In case of an exception that reverts changes, already used up gas is not refunded.
