@@ -41,16 +41,63 @@ Using the version pragma DOES NOT change the version of the compiler. It also DO
 
 
 contract SimpleStorage {
-    
+
     uint storedData; //a state variable called storedData of type uint (an unsigned integer of 256 bits)
 
-    function set(uint data) public {
+    function set(uint data) public { //sets inputted data as storedData
         storedData = data;
     }
 
-    function get() public view returns (uint) {
+    function get() public view returns (uint) { //returns inputted data 
         return storedData;
     }
 }
 ```
 
+### Subcurrency Example
+
+```solidity
+// SPDX-License-Identifier: GPL-3.0
+pragma solidity ^0.8.26;
+
+// This will only compile via IR(IR = in remix? Not sure)
+contract Coin {
+    // address declares a state variable of type address
+    // address type is a 160-bit value that DOES NOT allow any arithmetic operations. It is suitable for storing addresses of contracts, or a hash of the public half of a keypair belonging to external accounts.
+
+    // The keyword "public" makes variables accessible from other contracts
+    // The keyword "public" automatically generates a default basic "getter" functions that allows you to access the current value of the state variable from outside the contract. Without this keyword, other contracts have no way to access the variable. 
+
+    address public minter; 
+    mapping(address => uint) public balances; // creates public state variable
+
+
+
+    // Events allow clients to react to specific contract changes you declare
+    event Sent(address from, address to, uint amount);
+
+    // Constructor code is only run when the contract is created
+    constructor() {
+        minter = msg.sender;
+    }
+
+    // Sends an amount of newly created coins to an address
+    // Can only be called by the contract creator
+    function mint(address receiver, uint amount) public {
+        require(msg.sender == minter);
+        balances[receiver] += amount;
+    }
+
+    // Errors allow you to provide information about why an operation failed.
+    // They are returned to the caller of the function.
+    error InsufficientBalance(uint requested, uint available);
+
+    // Sends an amount of existing coins from any caller to an address
+    function send(address receiver, uint amount) public {
+        require(amount <= balances[msg.sender], InsufficientBalance(amount, balances[msg.sender]));
+        balances[msg.sender] -= amount;
+        balances[receiver] += amount;
+        emit Sent(msg.sender, receiver, amount);
+    }
+}
+```
