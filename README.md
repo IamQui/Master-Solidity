@@ -70,8 +70,9 @@ contract Coin {
 
     address public minter; 
     mapping(address => uint) public balances; // creates public state variable
-
-
+    // mapping type maps addresses to unsigned integers
+    // mappings can be seen as hash tables
+    // the getter function created by the public keyword is slightly more complex in the case of a mapping
 
     // Events allow clients to react to specific contract changes you declare
     event Sent(address from, address to, uint amount);
