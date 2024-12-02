@@ -44,3 +44,17 @@ Foundry manages your dependencies, compiles your project, runs tests, deploys, a
 // script - first function run() external
 
 // cast --to-base 0x714e1 dec
+
+## New Private Key secure
+
+// For now, let's pretend our private key is this:
+
+0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+
+// cast wallet import nameOfAccountGoesHere --interactive
+
+// don't do this in your VS Code
+
+// forge script script/DeployDemo.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --account nameOfAccountGoesHere --sender 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
+
+// To see all the configured wallets you can call the following: cast wallet list
