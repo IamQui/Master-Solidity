@@ -58,3 +58,14 @@ Foundry manages your dependencies, compiles your project, runs tests, deploys, a
 // forge script script/DeployDemo.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --account nameOfAccountGoesHere --sender 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266
 
 // To see all the configured wallets you can call the following: cast wallet list
+
+* cast send is the command we used to sign and publish our transaction
+
+* 0x5FbDB2315678afecb367f032d93F642f64180aa3 or any other address is the target of our cast send, the contract we are interacting with
+
+* "store(uint256)" is the [signature of the function](https://ethereum.stackexchange.com/questions/135205/what-is-a-function-signature-and-function-selector-in-solidity-and-evm-language) we are calling
+
+* 1337 is the number we pass to the store function. As we can see in the function signature, we are expected to provide an uint256 input. You can obviously provide any number you want, as long as it fits uint256.
+
+* you already know what --rpc-url $RPC_URL --private-key $PRIVATE_KEY are. The place where we send and the private key we use to sign.
+
